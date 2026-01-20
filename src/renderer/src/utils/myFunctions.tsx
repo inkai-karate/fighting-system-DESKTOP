@@ -25,7 +25,7 @@ export const formatTime = (isoString: Date | string): string => {
   return `${hours}:${minutes}`
 }
 
-export const formatDateTime = (dateString: string): string => {
+export const formatDateTime = (dateString: string | Date): string => {
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',

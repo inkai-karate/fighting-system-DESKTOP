@@ -1,4 +1,5 @@
 import { HomePage } from './homePage'
 import { LoginPage } from './loginPage'
+import { ScoringPage } from './scoringPage'
 
-export { LoginPage, HomePage }
+export { LoginPage, HomePage, ScoringPage }

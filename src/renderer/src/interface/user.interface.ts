@@ -1,4 +1,6 @@
 import type { IMedia } from './media.interface'
+import { IParticipant } from './participant.interface'
+import { IStaff } from './staff.interface'
 
 export interface IUser {
   id: number
@@ -15,6 +17,8 @@ export interface IUser {
   update_by: string
   delete_by: string
   profile_picture_media: IMedia
+  staff: IStaff | null
+  participant: IParticipant | null
 }
 export interface IPayloadUser {
   name: string
