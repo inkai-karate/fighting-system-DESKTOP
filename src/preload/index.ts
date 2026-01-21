@@ -29,10 +29,18 @@ const api = {
     checkIsFullscreen: () => ipcRenderer.invoke('exam-check-fullscreen')
   },
 
-  // Tambahan untuk reload ke login
   reload: {
     toLogin: () => ipcRenderer.send('reload-to-login'),
     restartToLogin: () => ipcRenderer.invoke('restart-to-login')
+  },
+
+  // API untuk screen size
+  screen: {
+    getSize: () => ipcRenderer.invoke('get-screen-size'),
+    getDisplayInfo: () => ipcRenderer.invoke('get-display-info'),
+    onSizeChanged: (callback: (size: { width: number; height: number }) => void) => {
+      ipcRenderer.on('screen-size-changed', (_, size) => callback(size))
+    }
   },
 
   getDeviceLabel: () => ipcRenderer.invoke('get-device-label'),

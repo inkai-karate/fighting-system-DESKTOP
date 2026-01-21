@@ -51,7 +51,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({
 
   return (
     <div
-      className="h-10 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3 select-none"
+      className="h-10 bg-neutral-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3 select-none"
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
       {/* Left - App Icon & Title */}
@@ -59,7 +59,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({
         <div className="w-4 h-4 rounded flex items-center justify-center">
           <img src={`${assetsPathConfig}/images/logo.png`} alt="" />
         </div>
-        <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{title}</span>
+        <span className="text-xs font-medium text-gray-300">{title}</span>
       </div>
 
       {/* Right Controls */}

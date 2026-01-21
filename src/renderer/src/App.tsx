@@ -37,28 +37,38 @@ const LoginOnlyLayout = ({ children }: LoginOnlyLayoutProps): JSX.Element => {
   )
 }
 
-const ExamSessionOnlyLayout = ({ children }: LoginOnlyLayoutProps): JSX.Element => {
-  const location = useLocation()
+const NoSidebarLayout = ({ children }: LoginOnlyLayoutProps): JSX.Element => {
+  // const location = useLocation()
 
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent): string => {
-      e.preventDefault()
-      e.returnValue = 'Apakah Anda yakin ingin meninggalkan ujian?'
-      return 'Apakah Anda yakin ingin meninggalkan ujian?'
-    }
+  // useEffect(() => {
+  //   const handleBeforeUnload = (e: BeforeUnloadEvent): string => {
+  //     e.preventDefault()
+  //     e.returnValue = 'Apakah Anda yakin ingin meninggalkan ujian?'
+  //     return 'Apakah Anda yakin ingin meninggalkan ujian?'
+  //   }
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
+  //   window.addEventListener('beforeunload', handleBeforeUnload)
 
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [location])
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload)
+  //   }
+  // }, [location])
+
+  const { theme, setTheme } = useTheme()
+
+  const userLogin = localStorage.getItem('userLogin')
+  const userData = userLogin ? JSON.parse(userLogin) : null
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden">
-      <main className="p-0 m-0 flex-1 flex items-center justify-center bg-slate-100 dark:bg-slate-900 overflow-hidden">
-        <div className="w-[100vh] h-full flex items-center justify-center">{children}</div>
-      </main>
+    <div className="flex flex-col h-screen w-screen overflow-hidden">
+      <TitleBar
+        username={userData?.username || ''}
+        onThemeToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      />
+
+      <div className="flex flex-1 overflow-hidden">
+        <main className="flex-1 bg-slate-100 dark:bg-black p-0 overflow-y-auto">{children}</main>
+      </div>
     </div>
   )
 }
@@ -110,7 +120,7 @@ const SidebarLayout = ({ children }: SidebarLayoutProps): JSX.Element => {
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar onLogout={handleLogout} />
-        <main className="flex-1 bg-slate-100 dark:bg-black p-6 overflow-y-auto">{children}</main>
+        <main className="flex-1 bg-slate-100 dark:bg-black p-0 overflow-y-auto">{children}</main>
       </div>
     </div>
   )
@@ -131,14 +141,14 @@ const renderRoute = (route: IAppRoute, key: number): JSX.Element => {
   }
 
   // PROTECTED - EXAM SESSION (tanpa sidebar & titlebar)
-  if (isProtected && path.startsWith('/exam-session/test/')) {
+  if (isProtected && path.startsWith('/scoring/xyz/')) {
     return (
       <Route
         key={key}
         path={path}
         element={
           <ProtectedLayout>
-            <ExamSessionOnlyLayout>{element}</ExamSessionOnlyLayout>
+            <NoSidebarLayout>{element}</NoSidebarLayout>
           </ProtectedLayout>
         }
       />

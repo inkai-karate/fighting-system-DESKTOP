@@ -8,6 +8,6 @@ export const appRoutes: IAppRoute[] = [
 
   // =============== PROTECTED ROUTES ===============
   { path: '/', element: <HomePage />, active: true, protected: true, redirectTo: '/login' },
-  { path: '/scoring/:id', element: <ScoringPage />, active: true, protected: true }
+  { path: '/scoring/xyz/:id', element: <ScoringPage />, active: true, protected: true }
   // { path: '*', element: <NotFoundPage />, active: true, protected: false }
 ]

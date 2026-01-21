@@ -139,7 +139,7 @@ const MatchCard = ({ match }: { match: IMatch }) => {
 
   return (
     <div
-      onClick={() => navigate(`/scoring/${match.uuid}`)}
+      onClick={() => navigate(`/scoring/xyz/${match.uuid}`)}
       className="cursor-pointer rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition-shadow"
     >
       <div className="flex justify-between items-center mb-1">
