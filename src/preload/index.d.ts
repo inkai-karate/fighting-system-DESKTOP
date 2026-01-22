@@ -18,11 +18,6 @@ declare global {
         loginSuccess: () => void
         logout: () => void
       }
-      exam: {
-        enterFullscreen: () => void
-        exitFullscreen: () => void
-        checkIsFullscreen: () => void
-      }
       reload: {
         toLogin: () => void
         restartToLogin: () => Promise<boolean>

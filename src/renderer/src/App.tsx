@@ -141,7 +141,7 @@ const renderRoute = (route: IAppRoute, key: number): JSX.Element => {
   }
 
   // PROTECTED - EXAM SESSION (tanpa sidebar & titlebar)
-  if (isProtected && path.startsWith('/scoring/xyz/')) {
+  if (isProtected && (path.startsWith('/scoring/xyz/') || path.startsWith('/scoring2/xyz/'))) {
     return (
       <Route
         key={key}

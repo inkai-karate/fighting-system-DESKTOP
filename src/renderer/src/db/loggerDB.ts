@@ -5,7 +5,7 @@ export class LoggerDB extends Dexie {
   logs!: Table<ILogData>
 
   constructor() {
-    super('tryoutLocalDB')
+    super('InkaiLocalDB')
 
     this.version(1).stores({
       logs: '++id, type, action, created_at, [type+created_at]'

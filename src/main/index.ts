@@ -8,6 +8,7 @@ import os from 'os'
 
 let mainWindow: BrowserWindow | null = null
 let loginWindow: BrowserWindow | null = null
+let scoringWindow: BrowserWindow | null = null
 
 // Fungsi untuk membersihkan localStorage di semua window
 function clearAllLocalStorage(): void {
@@ -204,6 +205,96 @@ function createMainWindow(): void {
   }
 }
 
+// Modifikasi IPC handler untuk create-screen-scoring
+ipcMain.on('create-screen-scoring', async (event, matchId) => {
+  console.log(event)
+
+  console.log('Creating scoring window with match ID:', matchId)
+
+  // Tutup scoring window yang lama jika ada
+  if (scoringWindow && !scoringWindow.isDestroyed()) {
+    scoringWindow.close()
+    scoringWindow = null
+  }
+
+  scoringWindow = new BrowserWindow({
+    show: false,
+    width: 1024,
+    height: 728,
+    // autoHideMenuBar: true,
+    webPreferences: {
+      webSecurity: false,
+      nodeIntegration: true,
+      preload: join(__dirname, '../preload/index.js'),
+      contextIsolation: false
+    }
+  })
+
+  scoringWindow.setFullScreen(true)
+  scoringWindow.setMenuBarVisibility(false)
+
+  // Load URL dengan route display
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    const url = `${process.env['ELECTRON_RENDERER_URL']}/scoring/display/${matchId}`
+    console.log('Loading URL:', url)
+    scoringWindow.loadURL(url)
+  } else {
+    scoringWindow.loadFile(join(__dirname, '../renderer/index.html'), {
+      hash: `/scoring/display/${matchId}`
+    })
+  }
+
+  scoringWindow.webContents.once('did-finish-load', async () => {
+    // Set token dulu, baru navigate
+    try {
+      const response = await scoringWindow?.webContents.executeJavaScript(
+        `window.location.hash = '/scoring/display/${matchId}'`
+        // `console.log('Setting up scoring display for match ID: ${matchId}')`
+      )
+      console.log('Scoring window navigation response:', response)
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  scoringWindow.on('ready-to-show', () => {
+    if (!scoringWindow) {
+      throw new Error('"scoringWindow" is not defined')
+    }
+    if (process.env.START_MINIMIZED) {
+      scoringWindow.minimize()
+    } else {
+      scoringWindow.show()
+    }
+  })
+
+  scoringWindow.on('closed', () => {
+    scoringWindow = null
+  })
+
+  // Open urls in the user's browser
+  scoringWindow.webContents.setWindowOpenHandler((edata) => {
+    shell.openExternal(edata.url)
+    return { action: 'deny' }
+  })
+})
+
+// Handler untuk mengirim data antar window
+ipcMain.on('send-data-to-window2', (event, data) => {
+  console.log(event)
+
+  if (scoringWindow && !scoringWindow.isDestroyed()) {
+    scoringWindow.webContents.send('receive-data-from-window1', data)
+  }
+})
+
+ipcMain.on('close-screen-scoring', async () => {
+  if (scoringWindow && !scoringWindow.isDestroyed()) {
+    scoringWindow.close()
+    scoringWindow = null
+  }
+})
+
 // IPC handlers untuk semua window
 ipcMain.on('window-minimize', (event) => {
   const window = BrowserWindow.fromWebContents(event.sender)
@@ -217,45 +308,6 @@ ipcMain.on('window-maximize', (event) => {
   } else {
     window?.maximize()
   }
-})
-
-ipcMain.on('exam-enter-fullscreen', (event) => {
-  const window = BrowserWindow.fromWebContents(event.sender)
-  if (window && !window.isDestroyed()) {
-    window.setFullScreen(true)
-    window.setClosable(false)
-    window.setAlwaysOnTop(true, 'screen-saver')
-
-    window.webContents.on('before-input-event', (event, input) => {
-      if (input.alt || input.meta || input.key === 'Meta' || input.key === 'Alt') {
-        event.preventDefault()
-      }
-      if (input.key === 'F11') {
-        event.preventDefault()
-      }
-      if (input.key === 'Escape') {
-        event.preventDefault()
-      }
-    })
-
-    console.log('Exam mode: Fullscreen enabled')
-  }
-})
-
-ipcMain.on('exam-exit-fullscreen', (event) => {
-  const window = BrowserWindow.fromWebContents(event.sender)
-  if (window && !window.isDestroyed()) {
-    window.setFullScreen(false)
-    window.setClosable(true)
-    window.setAlwaysOnTop(false)
-    window.webContents.removeAllListeners('before-input-event')
-    console.log('Exam mode: Fullscreen disabled')
-  }
-})
-
-ipcMain.handle('exam-check-fullscreen', (event) => {
-  const window = BrowserWindow.fromWebContents(event.sender)
-  return window?.isFullScreen() || false
 })
 
 ipcMain.on('window-close', (event) => {

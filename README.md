@@ -1,4 +1,4 @@
-# tryout-desktop-app
+# InKai - Scoring App
 
 An Electron application with React and TypeScript
 

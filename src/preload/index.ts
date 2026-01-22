@@ -10,6 +10,7 @@ const api = {
   getImage: async () => {
     return await ipcRenderer.invoke('get-assets-path')
   },
+
   getImageBase64: async (filename: string) => ipcRenderer.invoke('get-image-base64', filename),
 
   windowControl: {
@@ -23,18 +24,11 @@ const api = {
     logout: () => ipcRenderer.send('logout')
   },
 
-  exam: {
-    enterFullscreen: () => ipcRenderer.send('exam-enter-fullscreen'),
-    exitFullscreen: () => ipcRenderer.send('exam-exit-fullscreen'),
-    checkIsFullscreen: () => ipcRenderer.invoke('exam-check-fullscreen')
-  },
-
   reload: {
     toLogin: () => ipcRenderer.send('reload-to-login'),
     restartToLogin: () => ipcRenderer.invoke('restart-to-login')
   },
 
-  // API untuk screen size
   screen: {
     getSize: () => ipcRenderer.invoke('get-screen-size'),
     getDisplayInfo: () => ipcRenderer.invoke('get-display-info'),
@@ -51,7 +45,6 @@ const api = {
   }
 }
 
-// Gunakan contextBridge
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
