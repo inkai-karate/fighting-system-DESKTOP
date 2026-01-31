@@ -4,7 +4,7 @@ import type { ILogScoring, IPayloadLogScoring } from '@interface/logScoring.inte
 import type { AxiosResponse } from 'axios'
 
 interface LogScoringService {
-  getAllLogScoring: (params?: object) => Promise<IResponse<ILogScoring[]>>
+  getAllLogMatchScoring: (id: number) => Promise<IResponse<ILogScoring[]>>
   getDetailLogScoring: (id: string) => Promise<IResponse<ILogScoring>>
   createLogScoring: (data: IPayloadLogScoring) => Promise<IResponse>
   updateLogScoring: (id: string, data: IPayloadLogScoring) => Promise<IResponse>
@@ -14,13 +14,10 @@ interface LogScoringService {
 const LogScoringService = (): LogScoringService => {
   const axiosInstance = useAxiosInstance()
 
-  const getAllLogScoring = async (params?: object): Promise<IResponse<ILogScoring[]>> => {
+  const getAllLogMatchScoring = async (id: number): Promise<IResponse<ILogScoring[]>> => {
     try {
       const response: AxiosResponse<IResponse<ILogScoring[]>> = await axiosInstance.get(
-        `/log-scoring`,
-        {
-          params
-        }
+        `/log-activity-match/match/${id}`
       )
       return response.data
     } catch (error) {
@@ -32,7 +29,7 @@ const LogScoringService = (): LogScoringService => {
   const getDetailLogScoring = async (id: string): Promise<IResponse<ILogScoring>> => {
     try {
       const response: AxiosResponse<IResponse<ILogScoring>> = await axiosInstance.get(
-        `/log-scoring/${id}`
+        `/log-activity-match/${id}`
       )
       return response.data
     } catch (error) {
@@ -43,7 +40,10 @@ const LogScoringService = (): LogScoringService => {
 
   const createLogScoring = async (data: IPayloadLogScoring): Promise<IResponse> => {
     try {
-      const response: AxiosResponse<IResponse> = await axiosInstance.post(`/log-scoring`, data)
+      const response: AxiosResponse<IResponse> = await axiosInstance.post(
+        `/log-activity-match`,
+        data
+      )
       return response.data
     } catch (error) {
       console.error(error)
@@ -53,7 +53,10 @@ const LogScoringService = (): LogScoringService => {
 
   const updateLogScoring = async (id: string, data: IPayloadLogScoring): Promise<IResponse> => {
     try {
-      const response: AxiosResponse<IResponse> = await axiosInstance.put(`/log-scoring/${id}`, data)
+      const response: AxiosResponse<IResponse> = await axiosInstance.put(
+        `/log-activity-match/${id}`,
+        data
+      )
       return response.data
     } catch (error) {
       console.error(error)
@@ -63,7 +66,9 @@ const LogScoringService = (): LogScoringService => {
 
   const deleteLogScoring = async (id: number): Promise<IResponse> => {
     try {
-      const response: AxiosResponse<IResponse> = await axiosInstance.delete(`/log-scoring/${id}`)
+      const response: AxiosResponse<IResponse> = await axiosInstance.delete(
+        `/log-activity-match/${id}`
+      )
       return response.data
     } catch (error) {
       console.error(error)
@@ -72,7 +77,7 @@ const LogScoringService = (): LogScoringService => {
   }
 
   return {
-    getAllLogScoring,
+    getAllLogMatchScoring,
     getDetailLogScoring,
     createLogScoring,
     updateLogScoring,

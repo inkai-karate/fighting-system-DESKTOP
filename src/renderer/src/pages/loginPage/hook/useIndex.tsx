@@ -69,6 +69,9 @@ export const useIndex = () => {
 
     try {
       const response = await authService.loginAuth(formLogin)
+      const payload = {
+        type: 'WAITING_DISPLAY'
+      }
       if (response.success) {
         // if (response.data?.user.role === 'STUDENT') {
         localStorage.setItem('userLogin', JSON.stringify(response.data!.user))
@@ -78,8 +81,16 @@ export const useIndex = () => {
         })
         if (window.api && window.api.auth) {
           window.api.auth.loginSuccess()
+          window.electron?.ipcRenderer.send('create-screen-mirror')
+          setTimeout(() => {
+            window.electron?.ipcRenderer.send('scoring-to-main', payload)
+          }, 300)
         } else {
           window.location.href = '/'
+          window.electron?.ipcRenderer.send('create-screen-mirror')
+          setTimeout(() => {
+            window.electron?.ipcRenderer.send('scoring-to-main', payload)
+          }, 300)
         }
         // } else {
         // toast.warning('Login Gagal', {

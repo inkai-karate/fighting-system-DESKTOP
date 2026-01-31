@@ -6,10 +6,12 @@ import UserService from '@renderer/services/userService'
 import { toastMessage } from '@renderer/utils/optionsData'
 import { AxiosError } from 'axios'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useIndex = () => {
+  const navigate = useNavigate()
   const matchService = MatchService()
   const userService = UserService()
 
@@ -19,6 +21,7 @@ export const useIndex = () => {
     fetchDetailUser: false,
     fetchMatch: false
   })
+  const [temp, setTemp] = useState('initial')
 
   useEffect(() => {
     const fetchUserDetail = async (): Promise<void> => {
@@ -62,9 +65,52 @@ export const useIndex = () => {
     fetchUserDetail()
   }, [])
 
+  useEffect(() => {
+    console.log('🎯 Scoring Display mounted, setting up listener...')
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleMessageFromMain = (data: any): void => {
+      console.log('📩 Scoring window received message from main:', data)
+      setTemp(data.type)
+      if (data.type === 'SCORING_DISPLAY') {
+        navigate(`/scoring/display/${data.matchId}`)
+        window.api?.sendToMain({
+          type: 'SCORING_DISPLAY',
+          message: 'Hello from Scoring Display Window!',
+          matchId: data.matchId,
+          timestamp: new Date().toISOString()
+        })
+      }
+      if (data.type === 'WAITING_DISPLAY') {
+        navigate(`/waiting`)
+        window.api?.sendToMain({
+          type: 'WAITING_DISPLAY',
+          message: 'Hello from Waiting Window!',
+          matchId: data.matchId,
+          timestamp: new Date().toISOString()
+        })
+      }
+
+      if (data.type === 'PONG') {
+        console.log('✅ Received PONG from main:', data.message)
+      }
+    }
+
+    // Register listener
+    window.api?.onMessageFromMain(handleMessageFromMain)
+    console.log('✅ Listener registered')
+
+    // Cleanup
+    return () => {
+      console.log('🧹 Cleaning up listener')
+      window.api?.removeMessageListener()
+    }
+  }, [])
+
   return {
     dataMatch,
     dataStaff,
-    loading
+    loading,
+    temp
   }
 }

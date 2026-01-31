@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// Custom APIs for renderer
 const api = {
   getMyConfig: async () => {
     return await ipcRenderer.invoke('get-my-config')
@@ -12,6 +11,15 @@ const api = {
   },
 
   getImageBase64: async (filename: string) => ipcRenderer.invoke('get-image-base64', filename),
+
+  sendToScoring: (data: unknown) => ipcRenderer.send('send-message-to-scoring', data),
+  onMessageFromMain: (callback: (data: unknown) => void) => {
+    ipcRenderer.on('main-to-scoring', (_, data) => callback(data))
+  },
+  sendToMain: (data: unknown) => ipcRenderer.send('scoring-to-main', data),
+  removeMessageListener: () => {
+    ipcRenderer.removeAllListeners('main-to-scoring')
+  },
 
   windowControl: {
     minimize: () => ipcRenderer.send('window-minimize'),

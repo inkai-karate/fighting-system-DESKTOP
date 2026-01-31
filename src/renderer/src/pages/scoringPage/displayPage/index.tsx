@@ -1,5 +1,6 @@
 import React from 'react'
 import { UseIndex } from './hook/useIndex'
+import { useSocketIpc } from '@renderer/components/core/hook/useSocketIpc'
 
 export const ScoringDisplayPage: React.FC = () => {
   const {
@@ -13,15 +14,137 @@ export const ScoringDisplayPage: React.FC = () => {
     timeLeft,
     senshu,
     screenSize,
-    displaySizes
+    displaySizes,
+    isShowingWinner,
+    winnerTransition,
+    winnerInfo
   } = UseIndex()
+  // eslint-disable-next-line no-empty-pattern
+  const {} = useSocketIpc()
+
+  if (isShowingWinner && winnerInfo) {
+    return (
+      <div
+        className={`bg-black flex flex-col items-center justify-center transition-all duration-1000 ${
+          winnerTransition ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          width: `${screenSize.width}px`,
+          height: `${screenSize.height}px`,
+          overflow: 'hidden',
+          background:
+            winnerInfo.winnerColor === 'red'
+              ? 'radial-gradient(circle, rgba(185, 28, 28, 0.9) 0%, rgba(0, 0, 0, 1) 70%)'
+              : winnerInfo.winnerColor === 'blue'
+                ? 'radial-gradient(circle, rgba(29, 78, 216, 0.9) 0%, rgba(0, 0, 0, 1) 70%)'
+                : 'radial-gradient(circle, rgba(161, 98, 7, 0.9) 0%, rgba(0, 0, 0, 1) 70%)'
+        }}
+      >
+        {/* Winner Animation */}
+        <div className="relative">
+          {/* Glow Effect */}
+          <div
+            className="absolute inset-0 rounded-full blur-3xl"
+            style={{
+              background:
+                winnerInfo.winnerColor === 'red'
+                  ? 'rgba(239, 68, 68, 0.4)'
+                  : winnerInfo.winnerColor === 'blue'
+                    ? 'rgba(59, 130, 246, 0.4)'
+                    : 'rgba(234, 179, 8, 0.4)'
+            }}
+          />
+
+          {/* Winner Text */}
+          <div className="relative text-center mb-16">
+            <div
+              className="font-extrabold uppercase tracking-widest mb-6 animate-pulse"
+              style={{
+                fontSize: `${displaySizes.winnerFont}px`,
+                color:
+                  winnerInfo.winnerColor === 'red'
+                    ? '#fca5a5'
+                    : winnerInfo.winnerColor === 'blue'
+                      ? '#93c5fd'
+                      : '#fde047'
+              }}
+            >
+              {winnerInfo.winner === 'Seri' ? 'DRAW' : 'WINNER'}
+            </div>
+
+            {winnerInfo.winner !== 'Seri' && (
+              <div
+                className="font-bold uppercase"
+                style={{
+                  fontSize: `${displaySizes.winnerFont * 1.5}px`,
+                  color: winnerInfo.winnerColor === 'red' ? '#ef4444' : '#3b82f6',
+                  textShadow: '0 0 30px currentColor'
+                }}
+              >
+                {winnerInfo.winner}
+              </div>
+            )}
+          </div>
+
+          {/* Final Scores */}
+          <div className="grid grid-cols-2 gap-32 mb-16">
+            {/* AKA Final Score */}
+            <div className="text-center">
+              <div className="text-red-400 text-3xl font-bold mb-4">
+                {dataMatch?.red_corner.full_name}
+              </div>
+              <div
+                className="text-red-500 font-extrabold"
+                style={{ fontSize: `${displaySizes.finalScoreFont}px` }}
+              >
+                {scoreAka}
+              </div>
+              {winnerInfo.winnerColor === 'red' && (
+                <div className="text-yellow-400 text-xl font-bold mt-4 animate-bounce">
+                  🏆 CHAMPION 🏆
+                </div>
+              )}
+            </div>
+
+            {/* AO Final Score */}
+            <div className="text-center">
+              <div className="text-blue-400 text-3xl font-bold mb-4">
+                {dataMatch?.blue_corner.full_name}
+              </div>
+              <div
+                className="text-blue-500 font-extrabold"
+                style={{ fontSize: `${displaySizes.finalScoreFont}px` }}
+              >
+                {scoreAo}
+              </div>
+              {winnerInfo.winnerColor === 'blue' && (
+                <div className="text-yellow-400 text-xl font-bold mt-4 animate-bounce">
+                  🏆 CHAMPION 🏆
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Match Info */}
+          <div className="text-gray-300 text-4xl font-semibold mb-8">
+            Round {currentRound} / {totalRounds}
+          </div>
+
+          {/* Trophy Animation */}
+          <div className="text-8xl animate-bounce mt-8">
+            {winnerInfo.winner === 'Seri' ? '⚖️' : '🏆'}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
       className="bg-black flex flex-col justify-between overflow-hidden"
       style={{
         width: `${screenSize.width}px`,
-        height: `${screenSize.height > 758 ? screenSize.height * 0.953 : screenSize.height * 0.945}px`,
+        height: `${screenSize.height}px`,
         overflow: 'hidden'
       }}
     >
@@ -45,7 +168,7 @@ export const ScoringDisplayPage: React.FC = () => {
                 marginBottom: `${displaySizes.smallGap}px`
               }}
             >
-              {dataMatch?.blue_corner.full_name || 'AKA'}
+              {dataMatch?.red_corner.full_name || 'AKA'}
             </div>
             <div
               className="text-red-500 font-bold leading-none"
@@ -77,7 +200,7 @@ export const ScoringDisplayPage: React.FC = () => {
                 marginBottom: `${displaySizes.smallGap}px`
               }}
             >
-              {dataMatch?.red_corner.full_name || 'AO'}
+              {dataMatch?.blue_corner.full_name || 'AO'}
             </div>
             <div
               className="text-blue-500 font-bold leading-none"

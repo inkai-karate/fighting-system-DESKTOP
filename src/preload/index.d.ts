@@ -9,11 +9,17 @@ declare global {
       getMyConfig: () => Promise<IConfigAsset>
       getImage: () => Promise<string>
       getImageBase64: (filename: string) => Promise<string>
+      sendToScoring: (data: unknown) => void
+      onMessageFromMain: (callback: (data: unknown) => void) => void
+
       windowControl: {
         minimize: () => void
         maximize: () => void
         close: () => void
       }
+
+      sendToMain: (data: unknown) => void
+      removeMessageListener: () => void
       auth: {
         loginSuccess: () => void
         logout: () => void

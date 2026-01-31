@@ -1,5 +1,12 @@
 import { IAppRoute } from '@renderer/interface/config.interface'
-import { HomePage, LoginPage, ScoringDisplayPage, ScoringPage, ScoringPage2 } from '@renderer/pages'
+import {
+  HomePage,
+  LoginPage,
+  ScoringDisplayPage,
+  ScoringPage,
+  ScoringPage2,
+  WaitingPage
+} from '@renderer/pages'
 
 export const appRoutes: IAppRoute[] = [
   // =============== PUBLIC ROUTES ===============
@@ -8,8 +15,9 @@ export const appRoutes: IAppRoute[] = [
 
   // =============== PROTECTED ROUTES ===============
   { path: '/', element: <HomePage />, active: true, protected: true, redirectTo: '/login' },
-  { path: '/scoring/xyz/:id', element: <ScoringPage />, active: true, protected: true },
-  { path: '/scoring2/xyz/:id', element: <ScoringPage2 />, active: true, protected: true },
-  { path: '/scoring/display/:id', element: <ScoringDisplayPage />, active: true, protected: false }
+  { path: '/scoring/xyz/:id', element: <ScoringPage2 />, active: true, protected: true },
+  { path: '/scoring2/xyz/:id', element: <ScoringPage />, active: true, protected: true },
+  { path: '/scoring/display/:id', element: <ScoringDisplayPage />, active: true, protected: false },
+  { path: '/waiting', element: <WaitingPage />, active: true, protected: false }
   // { path: '*', element: <NotFoundPage />, active: true, protected: false }
 ]

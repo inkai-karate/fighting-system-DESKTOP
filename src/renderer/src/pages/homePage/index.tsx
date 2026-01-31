@@ -10,8 +10,7 @@ import { IParticipant } from '@renderer/interface/participant.interface'
 import { useNavigate } from 'react-router-dom'
 
 export const HomePage: React.FC = () => {
-  const { dataMatch, dataStaff, loading } = useIndex()
-
+  const { dataMatch, dataStaff, loading, temp } = useIndex()
   const getInitials = (name: string): string => {
     return name
       ? name
@@ -22,15 +21,23 @@ export const HomePage: React.FC = () => {
           .slice(0, 2)
       : 'S'
   }
+
+  const handleSendTOIpc = (): void => {
+    const payload = {
+      type: 'WAITING_DISPLAY'
+    }
+    window.electron?.ipcRenderer.send('scoring-to-main', payload)
+  }
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 text-sm relative">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 text-sm relative py-10 px-5">
         {/* Left Section - Welcome Message & Match List */}
         <div className="md:col-span-8 p-5 pt-0">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col justify-center">
               <h2 className="font-medium text-[25px] text-slate-600 dark:text-slate-400">
-                Halo, Selamat Datang
+                Halo, Selamat Datang {temp}
               </h2>
               <h1 className="font-bold text-[35px] mb-4 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 {loading.fetchDetailUser ? 'Loading...' : dataStaff?.full_name || 'Staff'}
@@ -122,7 +129,7 @@ export const HomePage: React.FC = () => {
 
               <Separator className="my-4" />
 
-              <Button className="w-full" variant="outline">
+              <Button className="w-full" variant="outline" onClick={() => handleSendTOIpc()}>
                 Edit Profil
               </Button>
             </div>
@@ -137,9 +144,18 @@ const MatchCard = ({ match }: { match: IMatch }) => {
   const navigate = useNavigate()
   const getParticipantName = (participant: IParticipant): string => participant?.full_name || '-'
 
+  const handleDetailScoring = (matchUuid: string): void => {
+    navigate(`/scoring/xyz/${matchUuid}`)
+    const payloadIpc = {
+      type: 'SCORING_DISPLAY',
+      matchId: matchUuid
+    }
+    window.electron?.ipcRenderer.send('scoring-to-main', payloadIpc)
+  }
+
   return (
     <div
-      onClick={() => navigate(`/scoring/xyz/${match.uuid}`)}
+      onClick={() => handleDetailScoring(match.uuid)}
       className="cursor-pointer rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition-shadow"
     >
       <div className="flex justify-between items-center mb-1">

@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useScreenResponsive = () => {
-  const [screenSize, setScreenSize] = useState({ width: 1920, height: 1080 })
+  const [screenSize, setScreenSize] = useState(() => ({
+    width: typeof window !== 'undefined' && window.innerWidth ? window.innerWidth : 1920,
+    height: typeof window !== 'undefined' && window.innerHeight ? window.innerHeight : 1080
+  }))
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -11,15 +15,20 @@ export const useScreenResponsive = () => {
       try {
         const size = await window.api?.screen?.getSize()
         if (mounted && size && size.width && size.height) {
-          setScreenSize(size)
+          setScreenSize({ width: window.innerWidth, height: window.innerHeight })
+          setIsReady(true) // set ready setelah mendapat ukuran
           return
         }
       } catch (e) {
         console.log('fetchSize: ', e)
       }
 
-      if (attempts > 0) setTimeout(() => fetchSize(attempts - 1, delay * 2), delay)
-      else if (mounted) setScreenSize({ width: window.innerWidth, height: window.innerHeight })
+      if (attempts > 0) {
+        setTimeout(() => fetchSize(attempts - 1, delay * 2), delay)
+      } else if (mounted) {
+        setScreenSize({ width: window.innerWidth, height: window.innerHeight })
+        setIsReady(true)
+      }
     }
 
     fetchSize()
@@ -129,5 +138,5 @@ export const useScreenResponsive = () => {
     }
   }, [screenSize])
 
-  return { screenSize, sizes1, sizes2 }
+  return { screenSize, sizes1, sizes2, isReady }
 }

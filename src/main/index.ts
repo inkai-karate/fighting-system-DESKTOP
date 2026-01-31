@@ -206,55 +206,66 @@ function createMainWindow(): void {
 }
 
 // Modifikasi IPC handler untuk create-screen-scoring
-ipcMain.on('create-screen-scoring', async (event, matchId) => {
-  console.log(event)
-
-  console.log('Creating scoring window with match ID:', matchId)
-
+ipcMain.on('create-screen-mirror', async () => {
   // Tutup scoring window yang lama jika ada
   if (scoringWindow && !scoringWindow.isDestroyed()) {
     scoringWindow.close()
     scoringWindow = null
   }
 
-  scoringWindow = new BrowserWindow({
+  // Dapatkan semua display/monitor yang tersedia
+  const displays = screen.getAllDisplays()
+
+  // Cari monitor kedua (indeks 1) jika ada
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const secondaryDisplay = displays.find((display) => display.id !== primaryDisplay.id)
+
+  // eslint-disable-next-line prefer-const
+  let windowOptions: Electron.BrowserWindowConstructorOptions = {
     show: false,
     width: 1024,
     height: 728,
-    // autoHideMenuBar: true,
+    fullscreenable: true,
+    titleBarStyle: 'hidden',
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true,
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: false
     }
-  })
+  }
 
+  // Jika ada monitor kedua, atur window ke monitor tersebut
+  if (secondaryDisplay) {
+    windowOptions.x = secondaryDisplay.bounds.x
+    windowOptions.y = secondaryDisplay.bounds.y
+    // Anda bisa juga menggunakan ukuran monitor kedua
+    windowOptions.width = secondaryDisplay.bounds.width
+    windowOptions.height = secondaryDisplay.bounds.height
+  }
+
+  scoringWindow = new BrowserWindow(windowOptions)
+
+  // Set fullscreen di monitor yang dipilih
   scoringWindow.setFullScreen(true)
   scoringWindow.setMenuBarVisibility(false)
 
-  // Load URL dengan route display
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    const url = `${process.env['ELECTRON_RENDERER_URL']}/scoring/display/${matchId}`
-    console.log('Loading URL:', url)
+    const url = `${process.env['ELECTRON_RENDERER_URL']}`
     scoringWindow.loadURL(url)
   } else {
-    scoringWindow.loadFile(join(__dirname, '../renderer/index.html'), {
-      hash: `/scoring/display/${matchId}`
-    })
+    scoringWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
   scoringWindow.webContents.once('did-finish-load', async () => {
-    // Set token dulu, baru navigate
-    try {
-      const response = await scoringWindow?.webContents.executeJavaScript(
-        `window.location.hash = '/scoring/display/${matchId}'`
-        // `console.log('Setting up scoring display for match ID: ${matchId}')`
-      )
-      console.log('Scoring window navigation response:', response)
-    } catch (error) {
-      console.log(error)
-    }
+    setTimeout(() => {
+      console.log('Sending INITIAL_LOAD_WAITING message to scoring window')
+      scoringWindow?.webContents.send('main-to-scoring', {
+        type: 'WAITING_DISPLAY',
+        timestamp: new Date().toISOString(),
+        message: 'Hello from Main Process waiting!'
+      })
+    }, 500)
   })
 
   scoringWindow.on('ready-to-show', () => {
@@ -264,7 +275,9 @@ ipcMain.on('create-screen-scoring', async (event, matchId) => {
     if (process.env.START_MINIMIZED) {
       scoringWindow.minimize()
     } else {
+      // Jika ada monitor kedua, fokus ke window tersebut
       scoringWindow.show()
+      scoringWindow.focus()
     }
   })
 
@@ -272,17 +285,64 @@ ipcMain.on('create-screen-scoring', async (event, matchId) => {
     scoringWindow = null
   })
 
-  // Open urls in the user's browser
   scoringWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url)
     return { action: 'deny' }
   })
 })
+// TAMBAHKAN HANDLER INI - untuk menerima pesan dari scoring window
+ipcMain.on('scoring-to-main', (_, data) => {
+  if (data.type === 'SCORING_DISPLAY') {
+    setTimeout(() => {
+      console.log('Sending SCORING_DISPLAY message to scoring window', data)
+      scoringWindow?.webContents.send('main-to-scoring', {
+        type: 'SCORING_DISPLAY',
+        matchId: data.matchId,
+        timestamp: new Date().toISOString(),
+        message: 'Hello from Main Process scoring!'
+      })
+    }, 500)
+  } else if (data.type === 'WAITING_DISPLAY') {
+    console.log('Sending WAITING_DISPLAY message to scoring window', data)
+    setTimeout(() => {
+      console.log('Sending WAITING_DISPLAY message to scoring window')
+      scoringWindow?.webContents.send('main-to-scoring', {
+        type: 'WAITING_DISPLAY',
+        timestamp: new Date().toISOString(),
+        message: 'Hello from Main Process waiting!'
+      })
+    }, 500)
+  }
+  // Kirim balasan PONG ke scoring window
+  if (scoringWindow && !scoringWindow.isDestroyed()) {
+    console.log('Sending PONG back to scoring window')
+    scoringWindow.webContents.send('main-to-scoring', {
+      type: 'PONG',
+      originalMessage: data,
+      timestamp: new Date().toISOString(),
+      message: 'Pong from Main Process!'
+    })
+  }
+
+  // Optional: kirim juga ke main window untuk update UI
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('scoring-response', data)
+  }
+})
+
+// TAMBAHKAN HANDLER INI - untuk kirim pesan manual dari main window ke scoring
+ipcMain.on('send-message-to-scoring', (_, data) => {
+  console.log('Main window sending message to scoring window:', data)
+
+  if (scoringWindow && !scoringWindow.isDestroyed()) {
+    scoringWindow.webContents.send('main-to-scoring', data)
+  } else {
+    console.log('⚠️ Scoring window not available')
+  }
+})
 
 // Handler untuk mengirim data antar window
-ipcMain.on('send-data-to-window2', (event, data) => {
-  console.log(event)
-
+ipcMain.on('send-data-to-window2', (_, data) => {
   if (scoringWindow && !scoringWindow.isDestroyed()) {
     scoringWindow.webContents.send('receive-data-from-window1', data)
   }

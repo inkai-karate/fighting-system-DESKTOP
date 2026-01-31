@@ -141,7 +141,12 @@ const renderRoute = (route: IAppRoute, key: number): JSX.Element => {
   }
 
   // PROTECTED - EXAM SESSION (tanpa sidebar & titlebar)
-  if (isProtected && (path.startsWith('/scoring/xyz/') || path.startsWith('/scoring2/xyz/'))) {
+  if (
+    isProtected &&
+    (path.startsWith('/scoring/xyz/') ||
+      path.startsWith('/scoring2/xyz/') ||
+      path.startsWith('/waiting'))
+  ) {
     return (
       <Route
         key={key}
@@ -201,7 +206,12 @@ const App: React.FC = () => {
     }
   }, [])
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading)
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
 
   return (
     <>

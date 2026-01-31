@@ -1,7 +1,9 @@
+// useIndex.tsx (ScoringDisplayPage)
 import { useEffect, useState, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+// import { useParams } from 'react-router-dom'
 import MatchService from '@renderer/services/matchService'
 import { IMatch } from '@renderer/interface/match.interface'
+import { useParams } from 'react-router-dom'
 
 interface IScoringData {
   scoreAka: number
@@ -25,6 +27,11 @@ interface IScoringData {
   timeLeft: number
   isRunning: boolean
   senshu: 'aka' | 'ao' | null
+  winnerDeclared: boolean
+  winnerInfo: {
+    winner: string
+    winnerColor: 'red' | 'blue' | 'draw'
+  } | null
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -45,21 +52,85 @@ export const UseIndex = () => {
     warningsAo: { w1: false, w2: false, w3: false, hc: false, h: false },
     timeLeft: 120,
     isRunning: false,
-    senshu: null
+    senshu: null,
+    winnerDeclared: false,
+    winnerInfo: null
   })
 
-  // Fetch match detail
-  const fetchDetailMatch = async (): Promise<void> => {
+  const [isShowingWinner, setIsShowingWinner] = useState(false)
+  const [winnerTransition, setWinnerTransition] = useState(false)
+
+  useEffect(() => {
     if (!id) return
-    try {
-      const response = await matchService.getMatchDetail(id || '')
-      if (response.success) {
-        setDataMatch(response.data)
+    const fetchDetailMatch = async (): Promise<void> => {
+      try {
+        const response = await matchService.getMatchDetail(id)
+        if (response.success) {
+          setDataMatch(response.data)
+          console.log('✅ Match detail loaded:', response.data)
+        }
+      } catch (error) {
+        console.error('❌ Error fetching match detail:', error)
       }
-    } catch (error) {
-      console.log(error)
     }
-  }
+    fetchDetailMatch()
+  }, [id])
+
+  useEffect(() => {
+    if (scoringData.winnerDeclared && scoringData.winnerInfo) {
+      // Tunggu sebentar sebelum menampilkan winner untuk efek dramatis
+      const timer = setTimeout(() => {
+        setIsShowingWinner(true)
+        setWinnerTransition(true)
+      }, 500)
+
+      return () => clearTimeout(timer)
+    } else {
+      setIsShowingWinner(false)
+      setWinnerTransition(false)
+    }
+  }, [scoringData.winnerDeclared, scoringData.winnerInfo])
+
+  // Listen untuk pesan dari main process
+  useEffect(() => {
+    console.log('🎯 Scoring Display mounted, setting up listener...')
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleMessageFromMain = (data: any): void => {
+      if (data.type === 'SCORING_UPDATE') {
+        console.log('📊 Received scoring update:', data)
+        setScoringData((prev) => ({
+          ...prev,
+          scoreAka: data.scoreAka,
+          scoreAo: data.scoreAo,
+          currentRound: data.currentRound,
+          totalRounds: data.totalRounds,
+          warningsAka: data.warningsAka,
+          warningsAo: data.warningsAo,
+          timeLeft: data.timeLeft,
+          isRunning: data.isRunning,
+          senshu: data.senshu
+        }))
+      } else if (data.type === 'WINNER_DECLARED') {
+        console.log('🏆 Received winner declared:', data)
+        setScoringData((prev) => ({
+          ...prev,
+          winnerDeclared: data.winnerDeclared,
+          winnerInfo: data.winnerInfo
+        }))
+      }
+    }
+
+    // Register listener
+    window.api?.onMessageFromMain(handleMessageFromMain)
+    console.log('✅ Listener registered')
+
+    // Cleanup
+    return () => {
+      console.log('🧹 Cleaning up listener')
+      window.api?.removeMessageListener()
+    }
+  }, [])
 
   // Listen untuk screen size changes
   useEffect(() => {
@@ -69,7 +140,7 @@ export const UseIndex = () => {
       try {
         const size = await window.api?.screen?.getSize()
         if (mounted && size && size.width && size.height) {
-          setScreenSize(size)
+          setScreenSize({ width: window.innerWidth, height: window.innerHeight })
           return
         }
       } catch (e) {
@@ -101,46 +172,17 @@ export const UseIndex = () => {
     }
   }, [])
 
-  // Listen untuk data dari window utama via IPC
-  useEffect(() => {
-    // Listen untuk data scoring dari window utama
-    const handleReceiveData = (data: IScoringData): void => {
-      console.log('Received scoring data:', data)
-      setScoringData(data)
-    }
-
-    // Register listener
-    // if (window.electron?.ipcRenderer) {
-    //   window.electron.ipcRenderer.on('receive-data-from-window1', handleReceiveData)
-    // }
-
-    // Cleanup
-    return () => {
-      if (window.electron?.ipcRenderer) {
-        window.electron.ipcRenderer.removeListener('receive-data-from-window1', handleReceiveData)
-      }
-    }
-  }, [])
-
-  // Fetch match detail saat component mount
-  useEffect(() => {
-    fetchDetailMatch()
-  }, [id])
-
   // Calculate responsive sizes
   const displaySizes = useMemo(() => {
     const h = screenSize.height
     const w = screenSize.width
 
     return {
-      // Spacing
       verticalPadding: h * 0.04,
       horizontalPadding: w * 0.06,
       sectionGap: w * 0.08,
       smallGap: h * 0.015,
       warningGap: w * 0.025,
-
-      // Fonts
       nameFont: h * 0.045,
       scoreFont: h * 0.22,
       warningTitleFont: h * 0.028,
@@ -148,14 +190,15 @@ export const UseIndex = () => {
       timerFont: h * 0.15,
       timerDecimalFont: h * 0.075,
       roundFont: h * 0.04,
-
-      // Elements
       logoWidth: w * 0.15,
-      senshuSize: h * 0.055
+      senshuSize: h * 0.055,
+      winnerFont: h * 0.08,
+      finalScoreFont: h * 0.15
     }
   }, [screenSize])
 
   return {
+    id,
     dataMatch,
     scoreAka: scoringData.scoreAka,
     scoreAo: scoringData.scoreAo,
@@ -166,6 +209,10 @@ export const UseIndex = () => {
     timeLeft: scoringData.timeLeft,
     isRunning: scoringData.isRunning,
     senshu: scoringData.senshu,
+    winnerDeclared: scoringData.winnerDeclared,
+    winnerInfo: scoringData.winnerInfo,
+    isShowingWinner,
+    winnerTransition,
     screenSize,
     displaySizes
   }
