@@ -188,3 +188,50 @@ export const statusExamSession: Record<
       'px-3 py-1 rounded-full text-xs font-medium bg-danger-100 text-danger-800 border border-danger-200'
   }
 }
+
+export const statusMatch: Record<
+  string,
+  {
+    value: string
+    label: string
+    bgcolor: string
+    textcolor: string
+    className: string
+  }
+> = {
+  SCHEDULED: {
+    value: 'SCHEDULED',
+    label: 'Jadwal Ditentukan',
+    bgcolor: 'bg-gray-500',
+    textcolor: 'text-gray-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200'
+  },
+
+  ONGOING: {
+    value: 'ONGOING',
+    label: 'Sedang Berlangsung',
+    bgcolor: 'bg-yellow-500',
+    textcolor: 'text-yellow-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200'
+  },
+
+  FINISHED: {
+    value: 'FINISHED',
+    label: 'Selesai',
+    bgcolor: 'bg-green-500',
+    textcolor: 'text-green-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200'
+  },
+
+  CANCELED: {
+    value: 'CANCELED',
+    label: 'Dibatalkan',
+    bgcolor: 'bg-red-500',
+    textcolor: 'text-red-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200'
+  }
+}

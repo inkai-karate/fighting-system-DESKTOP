@@ -33,7 +33,7 @@ export const UseGlobalLayout = () => {
     window.electron.ipcRenderer.once('uuid-response', handleResponse)
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
       secLicense = getDigitMD5Serial(recursiveMD5('2021VMS2025' + secProductId, 10))
       // console.log('id', secProductId)

@@ -77,17 +77,21 @@ export const UseIndex = () => {
   }, [id])
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null
+
     if (scoringData.winnerDeclared && scoringData.winnerInfo) {
       // Tunggu sebentar sebelum menampilkan winner untuk efek dramatis
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setIsShowingWinner(true)
         setWinnerTransition(true)
       }, 500)
-
-      return () => clearTimeout(timer)
     } else {
       setIsShowingWinner(false)
       setWinnerTransition(false)
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer)
     }
   }, [scoringData.winnerDeclared, scoringData.winnerInfo])
 
