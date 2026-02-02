@@ -35,7 +35,8 @@ export const useScreenResponsive = () => {
 
     if (window.api?.screen?.onSizeChanged) {
       window.api.screen.onSizeChanged((size) => {
-        if (mounted && size && size.width && size.height) setScreenSize(size)
+        if (mounted && size && size.width && size.height)
+          setScreenSize({ width: window.innerWidth, height: window.innerHeight })
       })
     }
 

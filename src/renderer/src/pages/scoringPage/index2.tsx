@@ -218,7 +218,7 @@ export const ScoringPage2: React.FC = () => {
                 const payloadIpc = {
                   type: 'WAITING_DISPLAY'
                 }
-                window.electron?.ipcRenderer.send('scoring-to-main', payloadIpc)
+                window.electron?.ipcRenderer.send('mirror-to-main', payloadIpc)
                 navigate('/')
               }}
               className="text-white font-bold bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-12 py-6 text-xl transition-all hover:scale-105 shadow-lg"

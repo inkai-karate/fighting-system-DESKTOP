@@ -83,13 +83,13 @@ export const useIndex = () => {
           window.api.auth.loginSuccess()
           window.electron?.ipcRenderer.send('create-screen-mirror')
           setTimeout(() => {
-            window.electron?.ipcRenderer.send('scoring-to-main', payload)
+            window.electron?.ipcRenderer.send('mirror-to-main', payload)
           }, 300)
         } else {
           window.location.href = '/'
           window.electron?.ipcRenderer.send('create-screen-mirror')
           setTimeout(() => {
-            window.electron?.ipcRenderer.send('scoring-to-main', payload)
+            window.electron?.ipcRenderer.send('mirror-to-main', payload)
           }, 300)
         }
         // } else {

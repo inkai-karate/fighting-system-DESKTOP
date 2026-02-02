@@ -1,4 +1,4 @@
-import type { IEventCategoryItem } from './eventCategoryItem.interface'
+import { IEventCategoryItem } from './eventCategoryItem.interface'
 
 export interface IEventCategory {
   id: number

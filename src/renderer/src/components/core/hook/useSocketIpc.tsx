@@ -13,7 +13,10 @@ export const useSocketIpc = () => {
       console.log('📩 Scoring window received message from main:', data)
       setData(data)
       if (data.type === 'SCORING_DISPLAY') {
-        navigate(`/scoring/display/${data.matchId}`)
+        navigate(`/scoring/mirror/${data.matchId}`)
+      }
+      if (data.type === 'BRACKET_DISPLAY') {
+        navigate(`/bracket/mirror/${data.bracketId}`)
       }
       if (data.type === 'WAITING_DISPLAY') {
         navigate(`/waiting`)

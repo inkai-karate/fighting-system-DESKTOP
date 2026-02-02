@@ -10,8 +10,10 @@ export interface IMatch {
   match_number: number
   red_corner_id: number
   blue_corner_id: number
+  bracket_type: string
   next_match_id: number
   winner_id: number
+  winner: IParticipant | null
   referee_id: number
   status: string
   start_time: Date

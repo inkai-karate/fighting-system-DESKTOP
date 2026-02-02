@@ -1,5 +1,5 @@
-import { IBracket } from './bracket.interface'
-import type { IEventCategory } from './eventCategory.interface'
+import type { IBracket } from './bracket.interface'
+import { IEventCategory } from './eventCategory.interface'
 import type { IMatch } from './match.interface'
 import type { IMedia } from './media.interface'
 import type { IParticipant } from './participant.interface'

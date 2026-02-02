@@ -56,6 +56,10 @@ export const toastMessage = {
     title: `Gagal Memuat Data ${sub}`,
     desc: 'Terjadi kesalahan saat memuat data.'
   }),
+  loadDetailError: (sub: string) => ({
+    title: `Gagal Memuat Detail ${sub}`,
+    desc: 'Terjadi kesalahan saat memuat detail.'
+  }),
   createSuccess: (sub: string) => ({
     title: 'Berhasil Menambah Data',
     desc: `Data ${sub} berhasil ditambahkan!`
@@ -233,5 +237,91 @@ export const statusMatch: Record<
     textcolor: 'text-red-500',
     className:
       'px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200'
+  }
+}
+
+export const statusEvent: Record<
+  string,
+  { value: string; label: string; textcolor: string; bgcolor: string; className: string }
+> = {
+  DRAFT: {
+    value: 'DRAFT',
+    label: 'Draft',
+    textcolor: 'text-yellow-500',
+    bgcolor: 'bg-yellow-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200'
+  },
+
+  REGISTRATION: {
+    value: 'REGISTRATION',
+    label: 'Pendaftaran',
+    textcolor: 'text-blue-500',
+    bgcolor: 'bg-blue-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200'
+  },
+
+  ONGOING: {
+    value: 'ONGOING',
+    label: 'Sedang Berlangsung',
+    textcolor: 'text-yellow-500',
+    bgcolor: 'bg-yellow-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200'
+  },
+
+  FINISHED: {
+    value: 'FINISHED',
+    label: 'Selesai',
+    textcolor: 'text-purple-500',
+    bgcolor: 'bg-purple-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200'
+  },
+
+  CANCELED: {
+    value: 'CANCELED',
+    label: 'Dibatalkan',
+    textcolor: 'text-red-500',
+    bgcolor: 'bg-red-500',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200'
+  }
+}
+
+export const statusPayment: Record<string, { value: string; label: string; className: string }> = {
+  UNPAID: {
+    value: 'UNPAID',
+    label: 'Belum Bayar',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200'
+  },
+  PAID: {
+    value: 'PAID',
+    label: 'Sudah Bayar',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200'
+  },
+  REFUND: {
+    value: 'REFUND',
+    label: 'Dikembalikan',
+    className:
+      'px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200'
+  }
+}
+
+export const statusCategoryBracket: Record<string, { value: string; label: string }> = {
+  C: {
+    value: 'C',
+    label: 'Campuran'
+  },
+  L: {
+    value: 'L',
+    label: 'Pria'
+  },
+  P: {
+    value: 'P',
+    label: 'Putri'
   }
 }

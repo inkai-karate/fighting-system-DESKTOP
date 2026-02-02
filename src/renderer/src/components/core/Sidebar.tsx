@@ -6,14 +6,14 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@renderer/components/ui/tooltip'
-import { Home, Users, LogOut, Sun, Moon } from 'lucide-react'
+import { Home, LogOut, Sun, Moon, Calendar } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useConfigStore } from '@renderer/store/configProvider'
 import { useTheme } from './ThemeProvider'
 
 const navItems = [
   { id: 'home', label: 'Home', icon: Home, link: '/' },
-  { id: 'users', label: 'Users', icon: Users, link: '/' }
+  { id: 'event', label: 'Event', icon: Calendar, link: '/event' }
 ]
 
 interface SidebarProps {

@@ -1,4 +1,4 @@
-import type { IEventCategoryItem } from './eventCategoryItem.interface'
+import { IEventCategoryItem } from './eventCategoryItem.interface'
 import type { IMedia } from './media.interface'
 
 export interface IParticipant {

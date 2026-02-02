@@ -16,7 +16,7 @@ const api = {
   onMessageFromMain: (callback: (data: unknown) => void) => {
     ipcRenderer.on('main-to-scoring', (_, data) => callback(data))
   },
-  sendToMain: (data: unknown) => ipcRenderer.send('scoring-to-main', data),
+  sendToMain: (data: unknown) => ipcRenderer.send('mirror-to-main', data),
   removeMessageListener: () => {
     ipcRenderer.removeAllListeners('main-to-scoring')
   },

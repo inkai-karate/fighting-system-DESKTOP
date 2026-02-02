@@ -668,7 +668,7 @@ export const UseIndex = () => {
     const payloadIpc = {
       type: 'WAITING_DISPLAY'
     }
-    window.electron?.ipcRenderer.send('scoring-to-main', payloadIpc)
+    window.electron?.ipcRenderer.send('mirror-to-main', payloadIpc)
     navigate('/')
   }
 

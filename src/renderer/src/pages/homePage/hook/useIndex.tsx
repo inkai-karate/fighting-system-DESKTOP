@@ -47,7 +47,10 @@ export const useIndex = () => {
     const fetchMatch = async (staffId: string): Promise<void> => {
       try {
         setLoading({ ...loading, fetchMatch: true })
-        const response = await matchService.getMatchesByReferee(staffId)
+        const params = {
+          status: 'ONGOING, SCHEDULED'
+        }
+        const response = await matchService.getMatchesByReferee(staffId, params)
         if (response.success) {
           setDataMatch(response.data || [])
         }
@@ -73,7 +76,7 @@ export const useIndex = () => {
       console.log('📩 Scoring window received message from main:', data)
       setTemp(data.type)
       if (data.type === 'SCORING_DISPLAY') {
-        navigate(`/scoring/display/${data.matchId}`)
+        navigate(`/scoring/mirror/${data.matchId}`)
         window.api?.sendToMain({
           type: 'SCORING_DISPLAY',
           message: 'Hello from Scoring Display Window!',

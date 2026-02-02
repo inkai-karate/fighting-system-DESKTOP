@@ -140,11 +140,12 @@ const renderRoute = (route: IAppRoute, key: number): JSX.Element => {
     return <Route key={key} path={path} element={element} />
   }
 
-  // PROTECTED - EXAM SESSION (tanpa sidebar & titlebar)
+  // (tanpa sidebar & titlebar)
   if (
     isProtected &&
     (path.startsWith('/scoring/xyz/') ||
       path.startsWith('/scoring2/xyz/') ||
+      path.startsWith('/bracket/mirror/') ||
       path.startsWith('/waiting'))
   ) {
     return (

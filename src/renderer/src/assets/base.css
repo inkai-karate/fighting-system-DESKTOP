@@ -123,19 +123,16 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for Firefox */
 body {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-/* For specific elements, replace 'body' with the element selector */
 .my-scrollable-div::-webkit-scrollbar {
   display: none;
 }
 
-*{
-    scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  /* border: 1px solid red; */
-}
+/* * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+} */

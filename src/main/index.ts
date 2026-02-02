@@ -291,7 +291,7 @@ ipcMain.on('create-screen-mirror', async () => {
   })
 })
 // TAMBAHKAN HANDLER INI - untuk menerima pesan dari scoring window
-ipcMain.on('scoring-to-main', (_, data) => {
+ipcMain.on('mirror-to-main', (_, data) => {
   if (data.type === 'SCORING_DISPLAY') {
     setTimeout(() => {
       console.log('Sending SCORING_DISPLAY message to scoring window', data)
@@ -302,12 +302,24 @@ ipcMain.on('scoring-to-main', (_, data) => {
         message: 'Hello from Main Process scoring!'
       })
     }, 500)
+  } else if (data.type === 'BRACKET_DISPLAY') {
+    setTimeout(() => {
+      console.log('Sending BRACKET_DISPLAY message to scoring window', data)
+      scoringWindow?.webContents.send('main-to-scoring', {
+        type: 'BRACKET_DISPLAY',
+        bracketId: data.bracketId,
+        timestamp: new Date().toISOString(),
+        message: 'Hello from Main Process scoring!'
+      })
+    }, 500)
   } else if (data.type === 'WAITING_DISPLAY') {
     console.log('Sending WAITING_DISPLAY message to scoring window', data)
     setTimeout(() => {
       console.log('Sending WAITING_DISPLAY message to scoring window')
       scoringWindow?.webContents.send('main-to-scoring', {
         type: 'WAITING_DISPLAY',
+        matchId: '',
+        bracketId: '',
         timestamp: new Date().toISOString(),
         message: 'Hello from Main Process waiting!'
       })

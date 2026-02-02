@@ -27,7 +27,7 @@ export const HomePage: React.FC = () => {
     const payload = {
       type: 'WAITING_DISPLAY'
     }
-    window.electron?.ipcRenderer.send('scoring-to-main', payload)
+    window.electron?.ipcRenderer.send('mirror-to-main', payload)
   }
 
   // Summary counts for the pill bar
@@ -39,10 +39,10 @@ export const HomePage: React.FC = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 text-sm relative py-10 px-5">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 text-sm relative py-10 px-5 h-[calc(100vh-40px)] overflow-hidden">
         {/* Left Section - Welcome Message & Match List */}
-        <div className="md:col-span-8 p-5 pt-0">
-          <div className="flex flex-col gap-6">
+        <div className="md:col-span-8 p-5 pt-0 flex flex-col overflow-hidden">
+          <div className="flex flex-col gap-6 flex-1 overflow-hidden">
             {/* Welcome Header */}
             <div className="flex flex-col justify-center">
               <h2 className="font-medium text-[25px] text-slate-600 dark:text-slate-400">
@@ -54,7 +54,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Match List */}
-            <div>
+            <div className="flex flex-col flex-1 overflow-hidden">
               {/* Section header with title + summary pills */}
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <h3 className="font-semibold text-lg text-slate-700 dark:text-slate-200">
@@ -105,45 +105,47 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Match Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {loading.fetchMatch ? (
-                  <div className="col-span-full">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div
-                          key={i}
-                          className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
-                        >
-                          <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 animate-pulse"></div>
-                          <div className="p-4 space-y-3">
-                            <div className="flex justify-between">
-                              <div className="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
-                              <div className="h-3 w-16 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+              <div className="flex-1 overflow-auto pb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {loading.fetchMatch ? (
+                    <div className="col-span-full">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div
+                            key={i}
+                            className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden"
+                          >
+                            <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 animate-pulse"></div>
+                            <div className="p-4 space-y-3">
+                              <div className="flex justify-between">
+                                <div className="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                                <div className="h-3 w-16 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+                              </div>
+                              <div className="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse"></div>
+                              <div className="h-3 w-8 bg-slate-200 dark:bg-slate-700 rounded self-center animate-pulse"></div>
+                              <div className="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse"></div>
+                              <div className="h-3 w-40 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
                             </div>
-                            <div className="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse"></div>
-                            <div className="h-3 w-8 bg-slate-200 dark:bg-slate-700 rounded self-center animate-pulse"></div>
-                            <div className="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse"></div>
-                            <div className="h-3 w-40 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ) : dataMatch && dataMatch.length > 0 ? (
-                  dataMatch.map((match) => <MatchCard key={match.id} match={match} />)
-                ) : (
-                  <div className="col-span-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center">
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 mx-auto mb-3">
-                      <Sword className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+                  ) : dataMatch && dataMatch.length > 0 ? (
+                    dataMatch.map((match) => <MatchCard key={match.id} match={match} />)
+                  ) : (
+                    <div className="col-span-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center">
+                      <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 mx-auto mb-3">
+                        <Sword className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+                      </div>
+                      <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                        Belum ada pertandingan
+                      </p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">
+                        Pertandingan yang ditugaskan akan muncul di sini.
+                      </p>
                     </div>
-                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                      Belum ada pertandingan
-                    </p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500">
-                      Pertandingan yang ditugaskan akan muncul di sini.
-                    </p>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -231,13 +233,16 @@ const MatchCard = ({ match }: { match: IMatch }) => {
   const getInitial = (participant: IParticipant): string =>
     participant?.full_name ? participant.full_name.charAt(0).toUpperCase() : '?'
 
-  const handleDetailScoring = (matchUuid: string): void => {
+  const handleDetailScoring = (matchUuid: string): void | Promise<void> => {
+    if (match.status === 'FINISHED') {
+      return navigate(`/scoring/history/${matchUuid}`)
+    }
     navigate(`/scoring/xyz/${matchUuid}`)
     const payloadIpc = {
       type: 'SCORING_DISPLAY',
       matchId: matchUuid
     }
-    window.electron?.ipcRenderer.send('scoring-to-main', payloadIpc)
+    window.electron?.ipcRenderer.send('mirror-to-main', payloadIpc)
   }
 
   return (

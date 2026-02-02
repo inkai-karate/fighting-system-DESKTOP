@@ -259,3 +259,13 @@ export const convertStatusLogGate: Record<string, { label: string; className: st
       'px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200'
   }
 }
+
+export const formatGenderParticipant = (gender: string): string => {
+  if (gender === 'L') {
+    return 'Putra'
+  } else if (gender === 'P') {
+    return 'Putri'
+  } else {
+    return ''
+  }
+}
