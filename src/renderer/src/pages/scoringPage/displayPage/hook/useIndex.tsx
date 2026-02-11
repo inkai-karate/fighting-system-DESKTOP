@@ -1,6 +1,5 @@
-// useIndex.tsx (ScoringDisplayPage)
-import { useEffect, useState, useMemo } from 'react'
-// import { useParams } from 'react-router-dom'
+// useIndexEnhanced.tsx (Enhanced ScoringDisplayPage Hook)
+import { useEffect, useState, useMemo, useRef } from 'react'
 import MatchService from '@renderer/services/matchService'
 import { IMatch } from '@renderer/interface/match.interface'
 import { useParams } from 'react-router-dom'
@@ -34,6 +33,16 @@ interface IScoringData {
   } | null
 }
 
+interface ScoreChangeEffect {
+  show: boolean
+  value: number
+}
+
+interface SenshuEffectState {
+  show: boolean
+  color: 'red' | 'blue'
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const UseIndex = () => {
   const { id } = useParams()
@@ -59,6 +68,91 @@ export const UseIndex = () => {
 
   const [isShowingWinner, setIsShowingWinner] = useState(false)
   const [winnerTransition, setWinnerTransition] = useState(false)
+
+  // Effect states
+  const [scoreChangeAka, setScoreChangeAka] = useState<ScoreChangeEffect>({ show: false, value: 0 })
+  const [scoreChangeAo, setScoreChangeAo] = useState<ScoreChangeEffect>({ show: false, value: 0 })
+  const [warningFlashAka, setWarningFlashAka] = useState(false)
+  const [warningFlashAo, setWarningFlashAo] = useState(false)
+  const [senshuEffect, setSenshuEffect] = useState<SenshuEffectState>({ show: false, color: 'red' })
+  const [roundChangeEffect, setRoundChangeEffect] = useState(false)
+
+  // Previous values untuk detect changes
+  const prevScoreAka = useRef(0)
+  const prevScoreAo = useRef(0)
+  const prevWarningsAka = useRef(scoringData.warningsAka)
+  const prevWarningsAo = useRef(scoringData.warningsAo)
+  const prevSenshu = useRef<'aka' | 'ao' | null>(null)
+  const prevRound = useRef(1)
+
+  // Detect score changes
+  useEffect(() => {
+    if (scoringData.scoreAka > prevScoreAka.current) {
+      const diff = scoringData.scoreAka - prevScoreAka.current
+      setScoreChangeAka({ show: true, value: diff })
+      setTimeout(() => setScoreChangeAka({ show: false, value: 0 }), 1000)
+    }
+    prevScoreAka.current = scoringData.scoreAka
+  }, [scoringData.scoreAka])
+
+  useEffect(() => {
+    if (scoringData.scoreAo > prevScoreAo.current) {
+      const diff = scoringData.scoreAo - prevScoreAo.current
+      setScoreChangeAo({ show: true, value: diff })
+      setTimeout(() => setScoreChangeAo({ show: false, value: 0 }), 1000)
+    }
+    prevScoreAo.current = scoringData.scoreAo
+  }, [scoringData.scoreAo])
+
+  // Detect warning changes
+  useEffect(() => {
+    const warningsChanged = Object.keys(scoringData.warningsAka).some(
+      (key) =>
+        scoringData.warningsAka[key as keyof typeof scoringData.warningsAka] !==
+        prevWarningsAka.current[key as keyof typeof prevWarningsAka.current]
+    )
+
+    if (warningsChanged) {
+      setWarningFlashAka(true)
+      setTimeout(() => setWarningFlashAka(false), 500)
+    }
+    prevWarningsAka.current = scoringData.warningsAka
+  }, [scoringData.warningsAka])
+
+  useEffect(() => {
+    const warningsChanged = Object.keys(scoringData.warningsAo).some(
+      (key) =>
+        scoringData.warningsAo[key as keyof typeof scoringData.warningsAo] !==
+        prevWarningsAo.current[key as keyof typeof prevWarningsAo.current]
+    )
+
+    if (warningsChanged) {
+      setWarningFlashAo(true)
+      setTimeout(() => setWarningFlashAo(false), 500)
+    }
+    prevWarningsAo.current = scoringData.warningsAo
+  }, [scoringData.warningsAo])
+
+  // Detect senshu changes
+  useEffect(() => {
+    if (scoringData.senshu !== prevSenshu.current && scoringData.senshu !== null) {
+      setSenshuEffect({
+        show: true,
+        color: scoringData.senshu === 'aka' ? 'red' : 'blue'
+      })
+      setTimeout(() => setSenshuEffect({ show: false, color: 'red' }), 1500)
+    }
+    prevSenshu.current = scoringData.senshu
+  }, [scoringData.senshu])
+
+  // Detect round changes
+  useEffect(() => {
+    if (scoringData.currentRound !== prevRound.current && scoringData.currentRound > 1) {
+      setRoundChangeEffect(true)
+      setTimeout(() => setRoundChangeEffect(false), 2000)
+    }
+    prevRound.current = scoringData.currentRound
+  }, [scoringData.currentRound])
 
   useEffect(() => {
     if (!id) return
@@ -218,6 +312,13 @@ export const UseIndex = () => {
     isShowingWinner,
     winnerTransition,
     screenSize,
-    displaySizes
+    displaySizes,
+    // Effect states
+    scoreChangeAka,
+    scoreChangeAo,
+    warningFlashAka,
+    warningFlashAo,
+    senshuEffect,
+    roundChangeEffect
   }
 }

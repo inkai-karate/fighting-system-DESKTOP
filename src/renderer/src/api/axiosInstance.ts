@@ -16,6 +16,7 @@ export const useAxiosInstance = (): AxiosInstance => {
     baseURL: `${baseURL}/api/v1`,
     headers: {
       'Content-Type': 'application/json',
+      'x-branch-uuid': '5d70180e-8030-4233-a3d8-0597a05833d0',
       ...(token && { Authorization: `Bearer ${token}` })
     }
   })

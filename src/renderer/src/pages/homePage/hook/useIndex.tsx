@@ -48,7 +48,7 @@ export const useIndex = () => {
       try {
         setLoading({ ...loading, fetchMatch: true })
         const params = {
-          status: 'ONGOING, SCHEDULED'
+          status: 'ONGOING,SCHEDULED'
         }
         const response = await matchService.getMatchesByReferee(staffId, params)
         if (response.success) {

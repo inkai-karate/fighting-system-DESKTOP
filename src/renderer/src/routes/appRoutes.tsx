@@ -24,7 +24,7 @@ export const appRoutes: IAppRoute[] = [
 
   { path: '/scoring/xyz/:id', element: <ScoringPage2 />, active: true, protected: true },
   { path: '/scoring2/xyz/:id', element: <ScoringPage />, active: true, protected: true },
-  { path: '/scoring/miror/:id', element: <ScoringDisplayPage />, active: true, protected: false },
+  { path: '/scoring/mirror/:id', element: <ScoringDisplayPage />, active: true, protected: false },
   { path: '/scoring/history/:id', element: <HistoryPage />, active: true, protected: true },
 
   { path: '/bracket/:id', element: <BracketScreenPage />, active: true, protected: true },
