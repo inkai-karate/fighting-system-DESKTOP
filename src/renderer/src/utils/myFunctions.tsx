@@ -139,6 +139,16 @@ export const getUrlImage = (data: string, placeholder = true): string => {
   return api.replace('/api', '') + data
 }
 
+export const getUrlProfilePartisipant = (data: string, placeholder = true): string => {
+  const { config } = useConfigStore.getState()
+  const api = `${config?.api_url}/uploads/media/`
+  if (!data && placeholder) {
+    return ''
+  }
+
+  return `${api}/${data}`
+}
+
 export const getMyEnv = (key: string): string => {
   const envValue = import.meta.env[key as keyof ImportMetaEnv]
   if (!envValue) {

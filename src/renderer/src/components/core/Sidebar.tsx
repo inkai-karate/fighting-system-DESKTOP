@@ -48,10 +48,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab = 'home', onTabChang
         </div>
 
         {/* Logo/Brand */}
-        <div className="relative flex items-center justify-center h-20 pt-6 pb-4">
-          <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg border border-white/30">
-            <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center">
-              <img src={`${assetsPathConfig}\\images\\logo.png`} alt="Logo" className="w-6 h-6" />
+          <div className="relative flex items-center justify-center h-20 pt-6 pb-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center shadow-lg border border-white/30 dark:border-white/10">
+            <div className="w-8 h-8 rounded-xl bg-white dark:bg-neutral-800 flex items-center justify-center">
+              <img src={`${assetsPathConfig}/images/logo.png`} alt="Logo" className="w-6 h-6" />
             </div>
           </div>
         </div>

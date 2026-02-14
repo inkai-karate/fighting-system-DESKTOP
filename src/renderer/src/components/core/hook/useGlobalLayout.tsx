@@ -1,3 +1,5 @@
+// INI DESKTOP
+import { IBranch } from '@renderer/interface/branch.interface'
 import ComputerDeviceService from '@renderer/services/computerDeviceService'
 import { useConfigStore } from '@renderer/store/configProvider'
 import { byPassSubs } from '@renderer/utils/config'
@@ -12,12 +14,26 @@ export const UseGlobalLayout = () => {
   const { config } = useConfigStore.getState()
   const myLicense = config?.license
 
+  const userLogin = localStorage.getItem('userLogin')
+  const userData = userLogin ? JSON.parse(userLogin) : null
+
   const [deviceId, setDeviceId] = useState<string>('')
   const [deviceName, setDeviceName] = useState<string>('')
   const [showModal, setShowModal] = useState<boolean>(false)
   const [licenseIs, setLicenseIs] = useState<boolean>(false)
   const [registered, setRegistered] = useState<boolean>(false)
   const [isExpired, setIsExpired] = useState<boolean>(true)
+
+  const dSelectedBranch = localStorage.getItem('selectedBranch')
+  const selectedBranch = dSelectedBranch ? JSON.parse(dSelectedBranch) : null
+  const [openBranchModal, setOpenBranchModal] = useState(false)
+  const branches = userData?.staff.staff_branch_access || []
+
+  const handleBranchSelect = (branch: IBranch): void => {
+    // setSelectedBranch(branch);
+    localStorage.setItem('selectedBranch', JSON.stringify(branch))
+    localStorage.setItem('selectedBranchUuid', branch.uuid)
+  }
 
   const checkIDDevice = async (): Promise<void> => {
     window.electron.ipcRenderer.send('get-deviceID')
@@ -36,9 +52,6 @@ export const UseGlobalLayout = () => {
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       secLicense = getDigitMD5Serial(recursiveMD5('2021VMS2025' + secProductId, 10))
-      // console.log('id', secProductId)
-      // console.log('ex', secLicense)
-      // console.log('my', myLicense)
 
       if (secLicense === myLicense) {
         setLicenseIs(true)
@@ -135,6 +148,12 @@ export const UseGlobalLayout = () => {
     licenseIs,
     registered,
     setRegistered,
-    isExpired
+    isExpired,
+    userData,
+    branches,
+    selectedBranch,
+    openBranchModal,
+    setOpenBranchModal,
+    handleBranchSelect
   }
 }

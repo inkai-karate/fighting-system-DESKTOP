@@ -286,7 +286,17 @@ export const UseIndex = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent): void => {
-      const { key, ctrlKey } = e
+      const { key, ctrlKey, code } = e
+
+      // Ignore when typing in form fields or contenteditable
+      const active = document.activeElement as HTMLElement | null
+      if (
+        active &&
+        (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT' ||
+          active.isContentEditable)
+      ) {
+        return
+      }
 
       if (key === '1' && ctrlKey) {
         e.preventDefault()
@@ -297,6 +307,12 @@ export const UseIndex = () => {
         navigate(`/scoring2/xyz/${id}`)
       }
 
+      // Space toggles start/pause (ignore when ctrl pressed)
+      if ((code === 'Space' || key === ' ' || key === 'Spacebar') && !ctrlKey) {
+        e.preventDefault()
+        handleStartStop()
+      }
+
       if (key === 'Escape') {
         setConfirmClosePage({ open: true, id: null })
       }
@@ -304,7 +320,7 @@ export const UseIndex = () => {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [handleStartStop, id, navigate])
 
   const fetchDetailMatch = async (): Promise<void> => {
     if (!id) return
@@ -397,6 +413,14 @@ export const UseIndex = () => {
       finalScoreAka: scoreAka,
       finalScoreAo: scoreAo,
       timestamp: new Date().toISOString()
+    }
+
+    // include match data so the display window can show participant names and details
+    if (dataMatch) {
+      // attach match info when available
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      data.match = dataMatch
     }
 
     console.log('Sending winner to display window:', data)

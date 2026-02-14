@@ -214,8 +214,16 @@ export const UseIndex = () => {
         setScoringData((prev) => ({
           ...prev,
           winnerDeclared: data.winnerDeclared,
-          winnerInfo: data.winnerInfo
+          winnerInfo: data.winnerInfo,
+          // if final scores provided, prefer them to ensure display shows final values
+          scoreAka: typeof data.finalScoreAka === 'number' ? data.finalScoreAka : prev.scoreAka,
+          scoreAo: typeof data.finalScoreAo === 'number' ? data.finalScoreAo : prev.scoreAo
         }))
+
+        // if match payload included, set it so names/details are available on display
+        if (data.match) {
+          setDataMatch(data.match)
+        }
       }
     }
 

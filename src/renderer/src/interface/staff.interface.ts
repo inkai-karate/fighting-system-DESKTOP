@@ -1,3 +1,4 @@
+import { IBranch } from './branch.interface'
 import type { IMedia } from './media.interface'
 import type { IUser } from './user.interface'
 
@@ -14,6 +15,7 @@ export interface IStaff {
   email: string
   position: string
   photo: IMedia[]
+  staff_branch_access?: IBranch[]
   user: IUser
   status: number
   created_at: Date

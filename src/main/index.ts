@@ -403,6 +403,18 @@ ipcMain.on('login-success', () => {
 // Handler untuk logout
 ipcMain.on('logout', () => {
   clearAllLocalStorage()
+
+  // Close scoring (mirror) window if open
+  try {
+    if (scoringWindow && !scoringWindow.isDestroyed()) {
+      scoringWindow.webContents.executeJavaScript('localStorage.clear()').catch(() => {})
+      scoringWindow.close()
+    }
+  } catch (err) {
+    console.error('Error closing scoring window on logout:', err)
+  }
+
+  // Close main window and reopen login
   mainWindow?.close()
   mainWindow = null
   createLoginWindow()

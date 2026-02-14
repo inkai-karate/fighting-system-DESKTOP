@@ -4,7 +4,7 @@ import { Separator } from '@renderer/components/ui/separator'
 import { User, MapPin, Calendar, Phone, Mail, Sword, Clock, Trophy } from 'lucide-react'
 import React from 'react'
 import { useIndex } from './hook/useIndex'
-import { formatDate, formatDateTime, getUrlImage } from '@renderer/utils/myFunctions'
+import { formatDate, formatDateTime, getUrlProfilePartisipant } from '@renderer/utils/myFunctions'
 import { IMatch } from '@renderer/interface/match.interface'
 import { IParticipant } from '@renderer/interface/participant.interface'
 import { useNavigate } from 'react-router-dom'
@@ -160,7 +160,7 @@ export const HomePage: React.FC = () => {
               <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
                 <Avatar className="w-32 h-32 border-4 border-white dark:border-slate-900 shadow-xl">
                   <AvatarImage
-                    src={getUrlImage(dataStaff?.photo?.[0]?.url || '')}
+                    src={getUrlProfilePartisipant(dataStaff?.photo?.[0]?.url || '')}
                     alt={dataStaff?.full_name}
                   />
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-500 text-white text-3xl font-bold">
@@ -230,8 +230,6 @@ export const HomePage: React.FC = () => {
 const MatchCard = ({ match }: { match: IMatch }) => {
   const navigate = useNavigate()
   const getParticipantName = (participant: IParticipant): string => participant?.full_name || '-'
-  const getInitial = (participant: IParticipant): string =>
-    participant?.full_name ? participant.full_name.charAt(0).toUpperCase() : '?'
 
   const handleDetailScoring = (matchUuid: string): void | Promise<void> => {
     if (match.status === 'FINISHED') {
@@ -285,7 +283,19 @@ const MatchCard = ({ match }: { match: IMatch }) => {
                     : 'bg-gray-300 dark:bg-gray-600'
               }`}
             >
-              <span className="text-white text-xs font-bold">{getInitial(match.red_corner)}</span>
+              <Avatar className="w-7 h-7 border-red-500">
+                <AvatarImage
+                  src={
+                    match.red_corner?.media?.[0]?.url
+                      ? getUrlProfilePartisipant(match.red_corner.media[0].url)
+                      : ''
+                  }
+                  alt={match.red_corner?.full_name || 'Red Corner'}
+                />
+                <AvatarFallback className="bg-red-500 text-white text-xs font-bold">
+                  {match.red_corner ? match.red_corner.full_name.charAt(0).toUpperCase() : '?'}
+                </AvatarFallback>
+              </Avatar>
             </div>
             <span className={`font-semibold text-sm text-slate-800 dark:text-slate-200 truncate`}>
               {getParticipantName(match.red_corner)}
@@ -310,7 +320,7 @@ const MatchCard = ({ match }: { match: IMatch }) => {
               match.winner_id && match.winner_id === match.blue_corner_id
                 ? 'bg-green-50 dark:bg-green-900/15 border border-green-200 dark:border-green-800'
                 : match.blue_corner
-                  ? 'bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20'
+                  ? 'bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20'
                   : 'bg-gray-50 dark:bg-gray-900/30 border border-dashed border-gray-250 dark:border-gray-600'
             }`}
           >
@@ -323,7 +333,19 @@ const MatchCard = ({ match }: { match: IMatch }) => {
                     : 'bg-gray-300 dark:bg-gray-600'
               }`}
             >
-              <span className="text-white text-xs font-bold">{getInitial(match.blue_corner)}</span>
+              <Avatar className="w-7 h-7 border-blue-500">
+                <AvatarImage
+                  src={
+                    match.blue_corner?.media?.[0]?.url
+                      ? getUrlProfilePartisipant(match.blue_corner.media[0].url)
+                      : ''
+                  }
+                  alt={match.blue_corner?.full_name || 'Blue Corner'}
+                />
+                <AvatarFallback className="bg-blue-500 text-white text-xs font-bold">
+                  {match.blue_corner ? match.blue_corner.full_name.charAt(0).toUpperCase() : '?'}
+                </AvatarFallback>
+              </Avatar>
             </div>
             <span className="font-semibold text-sm text-slate-800 dark:text-slate-200 truncate">
               {getParticipantName(match.blue_corner)}

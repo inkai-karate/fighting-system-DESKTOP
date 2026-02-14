@@ -11,12 +11,13 @@ export const useAxiosInstance = (): AxiosInstance => {
   const { config } = useConfigStore.getState()
   const baseURL = config?.api_url || 'http://localhost/3003'
   const token = localStorage.getItem('token')
+  const selectedBranchUuid = localStorage.getItem('selectedBranchUuid') || ''
 
   const instance = axios.create({
     baseURL: `${baseURL}/api/v1`,
     headers: {
       'Content-Type': 'application/json',
-      'x-branch-uuid': '5d70180e-8030-4233-a3d8-0597a05833d0',
+      ...(selectedBranchUuid && { 'x-branch-uuid': selectedBranchUuid }),
       ...(token && { Authorization: `Bearer ${token}` })
     }
   })

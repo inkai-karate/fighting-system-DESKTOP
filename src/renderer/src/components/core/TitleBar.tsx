@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Minus, Square, X, Sun, Moon, Copy } from 'lucide-react'
+import { Minus, Square, X, Sun, Moon, Copy, Building2 } from 'lucide-react'
 import { useConfigStore } from '@renderer/store/configProvider'
 import { UseGlobalLayout } from './hook/useGlobalLayout'
 import {
@@ -11,6 +11,7 @@ import {
 } from '@renderer/components/ui/dialog'
 import { Button } from '@renderer/components/ui/button'
 import { companyName } from '@renderer/utils/config'
+import { ModalBranchSelector } from './ModalBranchSelector'
 
 interface TitleBarProps {
   title?: string
@@ -25,7 +26,16 @@ export const TitleBar: React.FC<TitleBarProps> = ({
   onThemeToggle
 }) => {
   const { assetsPathConfig } = useConfigStore()
-  const { deviceId, showModal, setShowModal } = UseGlobalLayout()
+  const {
+    deviceId,
+    showModal,
+    setShowModal,
+    branches,
+    selectedBranch,
+    openBranchModal,
+    setOpenBranchModal,
+    handleBranchSelect
+  } = UseGlobalLayout()
 
   // === State Modal Close Confirm ===
   const [showConfirmClose, setShowConfirmClose] = useState(false)
@@ -38,12 +48,10 @@ export const TitleBar: React.FC<TitleBarProps> = ({
     window.electron?.ipcRenderer.send('window-maximize')
   }
 
-  // === Trigger open dialog, tidak langsung close ===
   const handleCloseClick = (): void => {
     setShowConfirmClose(true)
   }
 
-  // === Confirm action ===
   const confirmClose = (): void => {
     localStorage.clear()
     window.electron?.ipcRenderer.send('window-close')
@@ -59,7 +67,37 @@ export const TitleBar: React.FC<TitleBarProps> = ({
         <div className="w-4 h-4 rounded flex items-center justify-center">
           <img src={`${assetsPathConfig}/images/logo.png`} alt="" />
         </div>
-        <span className="text-xs font-medium text-gray-300">{title}</span>
+        <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{title}</span>
+      </div>
+
+      {/* Center - Branch Badge */}
+      <div
+        className="flex items-center"
+        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+      >
+        {selectedBranch ? (
+          <button
+            onClick={() => setOpenBranchModal(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium
+              bg-blue-900/40 hover:bg-blue-800/60 border border-blue-700/50
+              text-blue-300 hover:text-blue-200 transition-colors duration-150"
+          >
+            <Building2 className="w-3 h-3 flex-shrink-0" />
+            <span className="max-w-[160px] truncate">
+              {selectedBranch.branch_name ?? selectedBranch.branch_name}
+            </span>
+          </button>
+        ) : branches.length > 0 ? (
+          <button
+            onClick={() => setOpenBranchModal(true)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium
+              bg-neutral-700/60 hover:bg-neutral-600/60 border border-neutral-600/50
+              text-gray-400 hover:text-gray-300 transition-colors duration-150"
+          >
+            <Building2 className="w-3 h-3 flex-shrink-0" />
+            <span>Pilih Cabang</span>
+          </button>
+        ) : null}
       </div>
 
       {/* Right Controls */}
@@ -172,6 +210,13 @@ export const TitleBar: React.FC<TitleBarProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ModalBranchSelector
+        open={openBranchModal}
+        onOpenChange={setOpenBranchModal}
+        branches={branches}
+        onBranchSelect={handleBranchSelect}
+      />
     </div>
   )
 }

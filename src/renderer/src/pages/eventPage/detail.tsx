@@ -25,11 +25,11 @@ import { convertToSingleBracket } from '@utils/singleBracketFormater'
 import { convertToDoubleBracket } from '@utils/doubleBracketFormater'
 import { CustomThemeBracket } from '@utils/bracketOptions'
 import { Input } from '@components/ui/input'
-import { MyContainer } from '@renderer/components/core/MyContainer copy'
 import { IMatch } from '@renderer/interface/match.interface'
 import { useNavigate } from 'react-router-dom'
 import { IParticipant } from '@renderer/interface/participant.interface'
 import { formatDateTime } from '@renderer/utils/myFunctions'
+import { MyContainer } from '@renderer/components/core/MyContainer'
 
 type TabType = 'matches' | 'brackets'
 

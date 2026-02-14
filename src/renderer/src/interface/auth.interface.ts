@@ -1,9 +1,12 @@
+import { IStaff } from './staff.interface'
+
 export interface ILogin {
   uid: string
   username: string
   email: string
   role: string
   photo?: string
+  staff?: IStaff
 }
 
 export interface IPayloadLogin {

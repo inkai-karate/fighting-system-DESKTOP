@@ -36,7 +36,7 @@ export const LoginTitleBar: React.FC<TitleBarProps> = ({ username = '' }) => {
 
   return (
     <div
-      className="h-10 bg-slate-100 flex items-center justify-between px-3 select-none"
+      className="h-10 bg-slate-100 dark:bg-slate-900 flex items-center justify-between px-3 select-none"
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
       {/* Left - App Icon & Title */}

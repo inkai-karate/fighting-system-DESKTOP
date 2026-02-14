@@ -73,30 +73,48 @@ export const useIndex = () => {
         type: 'WAITING_DISPLAY'
       }
       if (response.success) {
-        // if (response.data?.user.role === 'STUDENT') {
-        localStorage.setItem('userLogin', JSON.stringify(response.data!.user))
-        localStorage.setItem('token', response.data!.token)
-        toast.success('Login Berhasil', {
-          description: `Selamat datang ${response.data!.user.username}`
-        })
-        if (window.api && window.api.auth) {
-          window.api.auth.loginSuccess()
-          window.electron?.ipcRenderer.send('create-screen-mirror')
-          setTimeout(() => {
-            window.electron?.ipcRenderer.send('mirror-to-main', payload)
-          }, 300)
+        if (response.data!.user!.staff!.staff_branch_access!.length === 0) {
+          toast.error('Login Gagal', {
+            description: `Akun Anda belum memiliki akses ke cabang manapun. Harap hubungi administrator.`
+          })
         } else {
-          window.location.href = '/'
-          window.electron?.ipcRenderer.send('create-screen-mirror')
-          setTimeout(() => {
-            window.electron?.ipcRenderer.send('mirror-to-main', payload)
-          }, 300)
+          localStorage.setItem('userLogin', JSON.stringify(response.data!.user))
+          localStorage.setItem('token', response.data!.token)
+          localStorage.setItem(
+            'branchData',
+            JSON.stringify(response.data!.user!.staff!.staff_branch_access || [])
+          )
+          localStorage.setItem(
+            'selectedBranch',
+            JSON.stringify(response.data!.user!.staff!.staff_branch_access![0] || null)
+          )
+          toast.success('Login Berhasil', {
+            description: `Selamat datang ${response.data!.user.username}`
+          })
+          localStorage.setItem(
+            'selectedBranchUuid',
+            response.data!.user!.staff!.staff_branch_access![0]?.uuid || ''
+          )
+          if (response.data?.user.role === 'REFEREE') {
+            if (window.api && window.api.auth) {
+              window.api.auth.loginSuccess()
+              window.electron?.ipcRenderer.send('create-screen-mirror')
+              setTimeout(() => {
+                window.electron?.ipcRenderer.send('mirror-to-main', payload)
+              }, 300)
+            } else {
+              window.location.href = '/'
+              window.electron?.ipcRenderer.send('create-screen-mirror')
+              setTimeout(() => {
+                window.electron?.ipcRenderer.send('mirror-to-main', payload)
+              }, 300)
+            }
+          } else {
+            toast.warning('Login Gagal', {
+              description: `Harap login menggunakan akun yang sesuai!`
+            })
+          }
         }
-        // } else {
-        // toast.warning('Login Gagal', {
-        // description: `Harap login menggunakan akun siswa!`
-        // })
-        // }
       } else {
         toast.error('Login Gagal', {
           description: 'Username/Password yang Anda masukkan salah!'
